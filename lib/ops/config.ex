@@ -43,7 +43,11 @@ defmodule Ops.Config do
     end
   end
 
-  def resolve(%WorkflowDefinition{}, _env) do
+  def resolve(%WorkflowDefinition{}, env) when not is_map(env) do
+    error(:invalid_config_shape, "environment must be a map", "env")
+  end
+
+  def resolve(%WorkflowDefinition{config: config}, _env) when not is_map(config) do
     error(:invalid_config_shape, "workflow config must be a map", "config")
   end
 
@@ -506,14 +510,20 @@ defmodule Ops.Config do
       {:ok, nil} ->
         nil
 
-      {:ok, value} when is_binary(value) ->
-        value
-
       {:ok, value} ->
-        to_string(value)
+        stringify_env_value(value)
 
       :error ->
         nil
+    end
+  end
+
+  defp stringify_env_value(value) when is_binary(value), do: value
+
+  defp stringify_env_value(value) do
+    case String.Chars.impl_for(value) do
+      nil -> nil
+      _impl -> to_string(value)
     end
   end
 

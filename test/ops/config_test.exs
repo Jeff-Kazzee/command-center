@@ -69,6 +69,38 @@ defmodule Ops.ConfigTest do
     assert config.tracker.api_key == "resolved-key"
   end
 
+  test "non-map env input returns typed config shape error" do
+    workflow =
+      workflow_definition(%{
+        "tracker" => %{
+          "kind" => "linear",
+          "api_key" => "token-123",
+          "project_slug" => "ops-orchestrator"
+        }
+      })
+
+    assert {:error, %ConfigError{} = error} = Config.resolve(workflow, :not_a_map)
+    assert error.code == :invalid_config_shape
+    assert error.field == "env"
+  end
+
+  test "non-string env value for $VAR returns missing api key error" do
+    workflow =
+      workflow_definition(%{
+        "tracker" => %{
+          "kind" => "linear",
+          "api_key" => "$LINEAR_API_KEY",
+          "project_slug" => "ops-orchestrator"
+        }
+      })
+
+    assert {:error, %ConfigError{} = error} =
+             Config.resolve(workflow, %{"LINEAR_API_KEY" => %{"nested" => "value"}})
+
+    assert error.code == :missing_tracker_api_key
+    assert error.field == "tracker.api_key"
+  end
+
   test "missing resolved tracker api key returns typed error" do
     workflow =
       workflow_definition(%{

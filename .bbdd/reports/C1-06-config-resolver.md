@@ -4,7 +4,7 @@
 
 - Issue: `208-114` (`C1-06 Implement config resolver black box`)
 - Date: 2026-03-05
-- Result: implementation complete; runtime verification blocked in this environment
+- Result: implementation complete; local verification passed
 
 ## Contract Checks
 
@@ -28,30 +28,34 @@
 ## Code Review Notes
 
 - Performed manual review of resolver semantics against `SPEC.md` Sections 5.3, 6.1, 6.3, 6.4, and 17.1.
-- Fixed one issue discovered during review:
-  - blank `tracker.endpoint` now normalizes to the Linear default endpoint instead of returning an empty string.
+- Fixed surfaced PR review issues:
+  - non-map `env` now returns a typed config-shape error on `field: "env"`.
+  - `$VAR` env resolution now safely ignores non-stringifiable values (no protocol crash).
+  - added regression coverage for non-string env values on `tracker.api_key` indirection.
+  - aligned C1-06 contract language for `codex.command` behavior (missing defaults, blank errors).
 
 ## Verification Evidence
 
-Attempted commands:
+Executed commands:
 
 ```powershell
-mix format
-mix.bat format
+mix.bat format --check-formatted
+mix.bat compile --warnings-as-errors
 mix.bat test
-mix test
 ```
 
 Observed result:
 
-- Elixir/Mix binaries are not available in this execution environment (`mix`/`mix.bat` not found), so runtime verification could not be executed here.
+- `mix.bat format --check-formatted`: pass
+- `mix.bat compile --warnings-as-errors`: pass
+- `mix.bat test`: pass (`23` tests, `0` failures)
 
 ## Deviations
 
-- `mix test` execution is pending due to missing local Elixir toolchain visibility in this runtime.
+- None.
 
 ## Follow-ups
 
-1. Run `mix test` in a host shell where Elixir/Mix is installed and on `PATH`.
-2. If tests pass, update Linear `208-114` with this report path and move issue to `Done`.
-3. Start C1-07 using `.bbdd/handoffs/C1-06-to-C1-07-workflow-watcher.md`.
+1. Update PR #4 with this report and rerun required CI checks.
+2. Merge via PR flow after `test` and `CodeRabbit` are green.
+3. Continue with C1-07 using `.bbdd/handoffs/C1-06-to-C1-07-workflow-watcher.md`.

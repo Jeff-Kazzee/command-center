@@ -22,16 +22,17 @@ Quick onboarding + working memory for agents in `command-center` (Ops Orchestrat
    - next handoff in `.bbdd/handoffs/`
 
 ## Current Focus (Next Session)
-- Completed: `208-113` / `C1-05 workflow loader` (contract frozen)
-- Next: `208-114` / `C1-06 config resolver`
+- Completed: `208-114` / `C1-06 config resolver` (contract frozen)
+- Next: `208-115` / `C1-07 workflow watcher + live reload`
 - Target API:
-  - `Ops.Config.resolve/2 -> {:ok, ServiceConfig.t()} | {:error, ConfigError.t()}`
+  - `Ops.WorkflowWatcher.start_link/1`
+  - `Ops.WorkflowWatcher.last_good/0`
 - Scope:
-  - source precedence (front matter > env indirection > defaults)
-  - coercion/normalization
-  - typed config errors
+  - watch workflow/config changes
+  - reload workflow + effective config safely
+  - preserve last-known-good config on invalid reload
 - Out of scope:
-  - watcher reload behavior (`C1-07`)
+  - scheduler policy expansion (`C1-08+`)
 
 ## Session Start Checklist
 1. Read `NEXT_SESSION_HANDOFF.md`.

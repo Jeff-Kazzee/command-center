@@ -49,23 +49,27 @@ Layer: Layer 3 (Application Logic)
    WHEN `resolve/2` is called
    THEN it returns `{:error, %Ops.ConfigError{code: :missing_tracker_project_slug}}`.
 
-6. GIVEN `codex.command` missing/blank after normalization
+6. GIVEN `codex.command` is missing
+   WHEN `resolve/2` is called
+   THEN the resolver applies the default command (`"codex app-server"`).
+
+7. GIVEN `codex.command` is blank after normalization
    WHEN `resolve/2` is called
    THEN it returns `{:error, %Ops.ConfigError{code: :missing_codex_command}}`.
 
-7. GIVEN an invalid value shape for typed numeric fields
+8. GIVEN an invalid value shape for typed numeric fields
    WHEN `resolve/2` is called
    THEN it returns `{:error, %Ops.ConfigError{code: :invalid_config_value}}`.
 
-8. GIVEN `agent.max_concurrent_agents_by_state` includes invalid entries
+9. GIVEN `agent.max_concurrent_agents_by_state` includes invalid entries
    WHEN `resolve/2` is called
    THEN state keys are normalized (`trim` + `lowercase`) and invalid entries are ignored.
 
-9. GIVEN `workspace.root` path values (`~`, path strings, `$VAR` path)
+10. GIVEN `workspace.root` path values (`~`, path strings, `$VAR` path)
    WHEN `resolve/2` is called
    THEN path expansion/normalization is applied to path fields only.
 
-10. GIVEN `codex.command` contains shell command syntax
+11. GIVEN `codex.command` contains shell command syntax
     WHEN `resolve/2` is called
     THEN the command is preserved as a shell command string and not path-expanded.
 

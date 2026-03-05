@@ -4,9 +4,9 @@ Copy/paste the following prompt into a fresh context window:
 
 ---
 
-You are continuing work on **Ops Orchestrator** in:
+You are continuing work on **Ops Orchestrator** in the repository root:
 
-`C:\Users\jeffk\Projects\command-center`
+`<repo-root>/command-center`
 
 ## Current Program State
 
@@ -82,6 +82,8 @@ Do not broaden scope into unrelated orchestrator features.
 Run and record:
 
 ```powershell
+mix format --check-formatted
+mix compile --warnings-as-errors
 mix test
 ```
 

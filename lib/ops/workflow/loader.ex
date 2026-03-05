@@ -15,7 +15,7 @@ defmodule Ops.Workflow.Loader do
 
     case File.read(resolved_path) do
       {:ok, content} ->
-        with {:ok, config, body} <- split_and_parse(content, resolved_path) do
+        with {:ok, config, body} <- split_and_parse(strip_utf8_bom(content), resolved_path) do
           {:ok,
            %WorkflowDefinition{
              config: config,
@@ -37,11 +37,14 @@ defmodule Ops.Workflow.Loader do
   defp resolve_path(path) when is_binary(path) do
     case String.trim(path) do
       "" -> @default_workflow_path
-      _ -> path
+      trimmed -> trimmed
     end
   end
 
   defp resolve_path(_), do: @default_workflow_path
+
+  defp strip_utf8_bom(<<239, 187, 191, rest::binary>>), do: rest
+  defp strip_utf8_bom(content), do: content
 
   defp split_and_parse(content, path) do
     case extract_front_matter(content) do

@@ -1,0 +1,20 @@
+# Elixir
+_build/
+deps/
+cover/
+erl_crash.dump
+*.ez
+
+# Logs
+log/
+*.log
+
+# Environment
+.env
+.env.*
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

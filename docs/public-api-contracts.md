@@ -5,6 +5,11 @@ These interfaces are the initial public contracts for Ops Orchestrator.
 ## Workflow
 
 - `Ops.Workflow.Loader.load(path) -> {:ok, WorkflowDefinition.t()} | {:error, WorkflowError.t()}`
+- `Ops.Workflow.Watcher.start_link(opts) -> GenServer.on_start()`
+- `Ops.Workflow.Watcher.current(pid) -> {:ok, WorkflowDefinition.t(), ServiceConfig.t()}`
+- `Ops.Workflow.Watcher.snapshot(pid) -> map()`
+- `Ops.Workflow.Watcher.refresh(pid) -> :ok | {:error, WorkflowError.t() | ConfigError.t()}`
+- `Ops.Workflow.Watcher.validate_dispatch_config(pid) -> :ok | {:error, WorkflowError.t() | ConfigError.t()}`
 
 ## Config
 

@@ -11,19 +11,25 @@ You are continuing work on **Ops Orchestrator** in:
 ## Current Program State
 
 - Linear project: `Ops Orchestrator`
-- Active follow-up issue: `C1-06 Implement config resolver black box`
-- Completed this session:
-  - Contract: `.bbdd/contracts/C1-05-workflow-loader-contract.md`
-  - Loader implementation: `Ops.Workflow.Loader.load/1`
-  - Types: `Ops.WorkflowDefinition`, `Ops.WorkflowError`
-  - Tests: `test/ops/workflow/loader_test.exs`
-  - Report: `.bbdd/reports/C1-05-workflow-loader.md`
+- Completed issue: `208-113` (`C1-05 Implement workflow loader black box`) - **Done**
+- Next issue: `208-114` (`C1-06 Implement config resolver black box`) - currently **Todo**
+- Default GitHub branch: `development`
+- Branch policy:
+  - feature branches: `codex/<issue>-<slug>`
+  - merge target: `development`
+  - required checks on `development` and `main`: `test`, `CodeRabbit`
+  - required approvals: `development=0`, `main=1`
 
 ## C1-05 Outcome Context
 
-- C1-05 code and tests were added and verified.
-- Verification evidence is recorded in `.bbdd/reports/C1-05-workflow-loader.md` with passing test runs.
-- Do not change C1-05 public interface unless a dedicated contract-change issue is opened.
+- Loader black box is implemented and verified:
+  - `lib/ops/workflow/loader.ex`
+  - `lib/ops/workflow_definition.ex`
+  - `lib/ops/workflow_error.ex`
+  - `test/ops/workflow/loader_test.exs`
+- C1-05 report: `.bbdd/reports/C1-05-workflow-loader.md`
+- C1-05 includes hardening for BOM-prefixed workflows and whitespace-trimmed explicit paths.
+- Do not change C1-05 public contract unless a dedicated contract-change issue is opened.
 
 ## Primary Goal (This Session)
 
@@ -43,7 +49,8 @@ Do not implement watcher reload behavior in this issue.
    - 17.1 (config parsing/validation matrix)
 2. `.bbdd/contracts/C1-04-layer1-core-types-contract.md`
 3. `.bbdd/contracts/C1-05-workflow-loader-contract.md`
-4. `docs/public-api-contracts.md`
+4. `.bbdd/reports/C1-05-workflow-loader.md`
+5. `docs/public-api-contracts.md`
 
 ## Required Outputs
 
@@ -63,17 +70,21 @@ Do not implement watcher reload behavior in this issue.
 
 - Follow BBDD strictly: `PLAN -> IMPLEMENT -> VERIFY`.
 - Respect layer boundaries and immutable public contract surfaces.
-- Keep C1-06 scoped to config resolution; no tracker I/O, no orchestrator logic.
+- Keep C1-06 scoped to config resolution.
+- Open a feature branch from `development`; merge via PR with required checks green.
 
 ## Verification Reminder
 
-If toolchain is available:
+Run and record:
 
 ```powershell
-mix deps.get
 mix test
 ```
 
-If unavailable, document blocker clearly in the C1-06 report and keep issue state aligned with actual verification status.
+Then update Linear `208-114` with:
+
+- implementation summary
+- report path
+- status transition based on verification result
 
 ---

@@ -4,7 +4,7 @@
 
 - Issue: `208-114` (`C1-06 Implement config resolver black box`)
 - Date: 2026-03-05
-- Result: implementation complete; runtime verification blocked in this environment
+- Result: pass
 
 ## Contract Checks
 
@@ -36,22 +36,21 @@
 Attempted commands:
 
 ```powershell
-mix format
+$env:PATH="C:\Program Files\Erlang OTP\bin;C:\Users\jeffk\Projects\command-center\deps\elixir-otp-28\bin;$env:PATH"
 mix.bat format
 mix.bat test
-mix test
 ```
 
 Observed result:
 
-- Elixir/Mix binaries are not available in this execution environment (`mix`/`mix.bat` not found), so runtime verification could not be executed here.
+- Project compiled successfully.
+- Full suite passed: `27 tests, 0 failures`.
 
 ## Deviations
 
-- `mix test` execution is pending due to missing local Elixir toolchain visibility in this runtime.
+- None.
 
 ## Follow-ups
 
-1. Run `mix test` in a host shell where Elixir/Mix is installed and on `PATH`.
-2. If tests pass, update Linear `208-114` with this report path and move issue to `Done`.
-3. Start C1-07 using `.bbdd/handoffs/C1-06-to-C1-07-workflow-watcher.md`.
+1. Update Linear `208-114` with implementation summary + this report path.
+2. Continue with C2-01 transport implementation.

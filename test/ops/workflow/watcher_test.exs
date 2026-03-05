@@ -13,9 +13,15 @@ defmodule Ops.Workflow.WatcherTest do
       write_workflow!(workflow_path, valid_workflow_content(30_000))
 
       assert {:ok, pid} =
-               Watcher.start_link(path: workflow_path, poll_interval_ms: 10_000, env_provider: fn -> %{} end)
+               Watcher.start_link(
+                 path: workflow_path,
+                 poll_interval_ms: 10_000,
+                 env_provider: fn -> %{} end
+               )
 
-      assert {:ok, %WorkflowDefinition{} = workflow, %ServiceConfig{} = config} = Watcher.current(pid)
+      assert {:ok, %WorkflowDefinition{} = workflow, %ServiceConfig{} = config} =
+               Watcher.current(pid)
+
       assert workflow.config["tracker"]["kind"] == "linear"
       assert config.polling.interval_ms == 30_000
 
@@ -34,6 +40,8 @@ defmodule Ops.Workflow.WatcherTest do
       workflow_path = Path.join(tmp_dir, "WORKFLOW.md")
       File.write!(workflow_path, "---\ntracker: [linear\n---\nPrompt")
 
+      Process.flag(:trap_exit, true)
+
       assert {:error, %WorkflowError{} = error} =
                Watcher.start_link(path: workflow_path, poll_interval_ms: 10_000)
 
@@ -47,7 +55,11 @@ defmodule Ops.Workflow.WatcherTest do
       write_workflow!(workflow_path, valid_workflow_content(30_000))
 
       assert {:ok, pid} =
-               Watcher.start_link(path: workflow_path, poll_interval_ms: 10_000, env_provider: fn -> %{} end)
+               Watcher.start_link(
+                 path: workflow_path,
+                 poll_interval_ms: 10_000,
+                 env_provider: fn -> %{} end
+               )
 
       write_workflow!(workflow_path, valid_workflow_content(45_000))
 
@@ -68,7 +80,11 @@ defmodule Ops.Workflow.WatcherTest do
       write_workflow!(workflow_path, valid_workflow_content(30_000))
 
       assert {:ok, pid} =
-               Watcher.start_link(path: workflow_path, poll_interval_ms: 10_000, env_provider: fn -> %{} end)
+               Watcher.start_link(
+                 path: workflow_path,
+                 poll_interval_ms: 10_000,
+                 env_provider: fn -> %{} end
+               )
 
       File.write!(workflow_path, "---\ntracker: [linear\n---\nPrompt")
 
@@ -91,7 +107,11 @@ defmodule Ops.Workflow.WatcherTest do
       write_workflow!(workflow_path, valid_workflow_content(30_000))
 
       assert {:ok, pid} =
-               Watcher.start_link(path: workflow_path, poll_interval_ms: 10_000, env_provider: fn -> %{} end)
+               Watcher.start_link(
+                 path: workflow_path,
+                 poll_interval_ms: 10_000,
+                 env_provider: fn -> %{} end
+               )
 
       File.write!(
         workflow_path,
@@ -128,14 +148,21 @@ defmodule Ops.Workflow.WatcherTest do
       write_workflow!(workflow_path, valid_workflow_content(30_000))
 
       assert {:ok, pid} =
-               Watcher.start_link(path: workflow_path, poll_interval_ms: 25, env_provider: fn -> %{} end)
+               Watcher.start_link(
+                 path: workflow_path,
+                 poll_interval_ms: 25,
+                 env_provider: fn -> %{} end
+               )
 
       write_workflow!(workflow_path, valid_workflow_content(750_000))
 
       assert wait_until(fn ->
                case Watcher.current(pid) do
-                 {:ok, _workflow, %ServiceConfig{} = config} -> config.polling.interval_ms == 750_000
-                 _ -> false
+                 {:ok, _workflow, %ServiceConfig{} = config} ->
+                   config.polling.interval_ms == 750_000
+
+                 _ ->
+                   false
                end
              end)
 

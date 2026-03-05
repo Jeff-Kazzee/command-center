@@ -46,7 +46,7 @@ defmodule Ops.Workflow.Watcher do
             poll_interval_ms: pos_integer(),
             loader: module(),
             resolver: module(),
-            env_provider: (() -> map()),
+            env_provider: (-> map()),
             current_fingerprint: term(),
             last_good_workflow_definition: WorkflowDefinition.t(),
             last_good_service_config: ServiceConfig.t(),
@@ -62,7 +62,7 @@ defmodule Ops.Workflow.Watcher do
           | {:poll_interval_ms, pos_integer()}
           | {:loader, module()}
           | {:resolver, module()}
-          | {:env_provider, (() -> map())}
+          | {:env_provider, (-> map())}
           | {:name, GenServer.name()}
 
   @type snapshot :: %{
@@ -97,7 +97,10 @@ defmodule Ops.Workflow.Watcher do
   @impl true
   def init(opts) do
     workflow_path = resolve_path(Keyword.get(opts, :path))
-    poll_interval_ms = normalize_poll_interval(Keyword.get(opts, :poll_interval_ms, @default_poll_interval_ms))
+
+    poll_interval_ms =
+      normalize_poll_interval(Keyword.get(opts, :poll_interval_ms, @default_poll_interval_ms))
+
     loader = Keyword.get(opts, :loader, Ops.Workflow.Loader)
     resolver = Keyword.get(opts, :resolver, Ops.Config)
     env_provider = Keyword.get(opts, :env_provider, &System.get_env/0)
@@ -158,7 +161,7 @@ defmodule Ops.Workflow.Watcher do
     {:noreply, next_state}
   end
 
-  defp refresh_state(state, source, force_reload?) do
+  defp refresh_state(%State{} = state, source, force_reload?) do
     fingerprint = workflow_fingerprint(state.workflow_path)
     now_ms = now_ms()
     should_reload = force_reload? or fingerprint != state.current_fingerprint

@@ -21,6 +21,19 @@ defmodule Ops.Workflow.LoaderTest do
     end)
   end
 
+  test "explicit path is trimmed before read" do
+    with_tmp_dir(fn tmp_dir ->
+      explicit_path = Path.join(tmp_dir, "custom-workflow.md")
+      File.write!(explicit_path, "---\nsource: explicit\n---\nExplicit prompt")
+
+      padded_path = "  #{explicit_path}  "
+
+      assert {:ok, %WorkflowDefinition{} = definition} = Loader.load(padded_path)
+      assert definition.config["source"] == "explicit"
+      assert definition.prompt_template == "Explicit prompt"
+    end)
+  end
+
   test "default path is used when explicit path is absent" do
     with_tmp_dir(fn tmp_dir ->
       workflow_path = Path.join(tmp_dir, "WORKFLOW.md")
@@ -41,6 +54,18 @@ defmodule Ops.Workflow.LoaderTest do
         assert error.code == :missing_workflow_file
         assert error.path == "./WORKFLOW.md"
       end)
+    end)
+  end
+
+  test "utf-8 bom-prefixed files still parse front matter" do
+    with_tmp_dir(fn tmp_dir ->
+      workflow_path = Path.join(tmp_dir, "WORKFLOW.md")
+      content = <<239, 187, 191>> <> "---\ntracker:\n  kind: linear\n---\nPrompt"
+      File.write!(workflow_path, content)
+
+      assert {:ok, %WorkflowDefinition{} = definition} = Loader.load(workflow_path)
+      assert definition.config["tracker"]["kind"] == "linear"
+      assert definition.prompt_template == "Prompt"
     end)
   end
 

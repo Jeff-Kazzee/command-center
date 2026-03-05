@@ -156,7 +156,7 @@ defmodule Ops.ConfigTest do
       })
 
     assert {:ok, %ServiceConfig{} = home_config} = Config.resolve(workflow_with_home, %{})
-    assert home_config.workspace.root == System.user_home!()
+    assert Path.expand(home_config.workspace.root) == Path.expand(System.user_home!())
   end
 
   test "codex command is preserved as shell command string" do

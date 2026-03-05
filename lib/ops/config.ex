@@ -22,7 +22,8 @@ defmodule Ops.Config do
   @codex_read_timeout_default 5_000
   @codex_stall_timeout_default 300_000
 
-  @spec resolve(WorkflowDefinition.t(), map()) :: {:ok, ServiceConfig.t()} | {:error, ConfigError.t()}
+  @spec resolve(WorkflowDefinition.t(), map()) ::
+          {:ok, ServiceConfig.t()} | {:error, ConfigError.t()}
   def resolve(%WorkflowDefinition{config: config}, env) when is_map(config) and is_map(env) do
     with {:ok, tracker} <- resolve_tracker(config, env),
          {:ok, polling} <- resolve_polling(config),
@@ -60,7 +61,12 @@ defmodule Ops.Config do
              "tracker.project_slug",
              :missing_tracker_project_slug
            ),
-         {:ok, endpoint} <- parse_optional_string(fetch_value(tracker, "endpoint"), "tracker.endpoint", @tracker_endpoint_default),
+         {:ok, endpoint} <-
+           parse_optional_string(
+             fetch_value(tracker, "endpoint"),
+             "tracker.endpoint",
+             @tracker_endpoint_default
+           ),
          {:ok, active_states} <-
            parse_string_list(
              fetch_value(tracker, "active_states"),
@@ -107,10 +113,14 @@ defmodule Ops.Config do
 
   defp resolve_hooks(config) do
     with {:ok, hooks} <- section_map(config, "hooks"),
-         {:ok, after_create} <- parse_optional_script(fetch_value(hooks, "after_create"), "hooks.after_create"),
-         {:ok, before_run} <- parse_optional_script(fetch_value(hooks, "before_run"), "hooks.before_run"),
-         {:ok, after_run} <- parse_optional_script(fetch_value(hooks, "after_run"), "hooks.after_run"),
-         {:ok, before_remove} <- parse_optional_script(fetch_value(hooks, "before_remove"), "hooks.before_remove"),
+         {:ok, after_create} <-
+           parse_optional_script(fetch_value(hooks, "after_create"), "hooks.after_create"),
+         {:ok, before_run} <-
+           parse_optional_script(fetch_value(hooks, "before_run"), "hooks.before_run"),
+         {:ok, after_run} <-
+           parse_optional_script(fetch_value(hooks, "after_run"), "hooks.after_run"),
+         {:ok, before_remove} <-
+           parse_optional_script(fetch_value(hooks, "before_remove"), "hooks.before_remove"),
          {:ok, timeout_ms} <- parse_hooks_timeout(fetch_value(hooks, "timeout_ms")) do
       {:ok,
        %{
@@ -271,7 +281,9 @@ defmodule Ops.Config do
   defp validate_tracker_kind(kind) when kind in @supported_tracker_kinds, do: :ok
 
   defp validate_tracker_kind(kind) do
-    error(:invalid_tracker_kind, "tracker.kind is unsupported: #{kind}", "tracker.kind", %{value: kind})
+    error(:invalid_tracker_kind, "tracker.kind is unsupported: #{kind}", "tracker.kind", %{
+      value: kind
+    })
   end
 
   defp resolve_tracker_kind(nil) do
@@ -282,8 +294,15 @@ defmodule Ops.Config do
     kind
     |> String.trim()
     |> case do
-      "" -> error(:invalid_tracker_kind, "tracker.kind is required and must be supported", "tracker.kind")
-      value -> validate_tracker_kind(value)
+      "" ->
+        error(
+          :invalid_tracker_kind,
+          "tracker.kind is required and must be supported",
+          "tracker.kind"
+        )
+
+      value ->
+        validate_tracker_kind(value)
     end
     |> case do
       :ok -> {:ok, String.trim(kind)}
@@ -292,7 +311,9 @@ defmodule Ops.Config do
   end
 
   defp resolve_tracker_kind(kind) do
-    error(:invalid_tracker_kind, "tracker.kind must be a supported string", "tracker.kind", %{value: kind})
+    error(:invalid_tracker_kind, "tracker.kind must be a supported string", "tracker.kind", %{
+      value: kind
+    })
   end
 
   defp normalize_tracker_endpoint(""), do: @tracker_endpoint_default
@@ -535,8 +556,12 @@ defmodule Ops.Config do
 
       :error ->
         Enum.find_value(map, :error, fn
-          {candidate_key, value} when is_atom(candidate_key) and Atom.to_string(candidate_key) == key ->
-            {:ok, value}
+          {candidate_key, value} when is_atom(candidate_key) ->
+            if Atom.to_string(candidate_key) == key do
+              {:ok, value}
+            else
+              nil
+            end
 
           _ ->
             nil

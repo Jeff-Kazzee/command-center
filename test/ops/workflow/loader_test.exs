@@ -95,7 +95,10 @@ defmodule Ops.Workflow.LoaderTest do
 
   defp with_tmp_dir(fun) do
     tmp_dir =
-      Path.join(System.tmp_dir!(), "ops-workflow-loader-test-#{System.unique_integer([:positive])}")
+      Path.join(
+        System.tmp_dir!(),
+        "ops-workflow-loader-test-#{System.unique_integer([:positive])}"
+      )
 
     File.mkdir_p!(tmp_dir)
 
